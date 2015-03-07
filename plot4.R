@@ -1,5 +1,6 @@
 ## This function displays plot4 on a new screen graphical device as well as saves
 ## a copy of the plot in png format in the current directory.
+
 plot4 <- function(filename){
 	data<- readFile(filename)
 	plotGraphs(data,4)
@@ -7,7 +8,10 @@ plot4 <- function(filename){
 	## Saves the plot on the currently active graphical device to a png file
 	## named "plot4.png" with a width and height of 480 pixels
 	png(filename = "plot4.png", width = 480, height = 480, units = "px")
+	plotGraphs(data,4)
+	dev.off()
 }
+
 
 
 
@@ -17,60 +21,38 @@ plot4 <- function(filename){
 ##		produces.
 ## 'data'	data.frame containing the data to be used in plotting. Intended to
 ##		take as input the output of readFile("data_file.txt")
-##
-## Note: Each time this function is called it creates a screen graphical device
-## on which to draw the desired plot, this is done by calling dev.new()
 
 plotGraphs <- function(data,n){
 
-	if(n==1){
-	## FIRST PLOT. Histogram of Global Active Power (kilowatts)
-	dev.new()
-	with(data,hist(as.numeric(Global_active_power),xlab = "Global Active Power (kilowatts)",col = "red", main = "Global Active Power") )
-	
-	}else if(n==2){
-	## SECOND PLOT. Plot of Global Active Power (kilowats) vs. Time of the week
-	dev.new()
-	with(data, plot(datesToTime,Global_active_power,xaxt='n',type="l",ylab ="Global Active Power (kilowatts)"))
-	axis(1, c(0,.5,1), c("Thu","Fri","Sat"))
-	
-	}else if(n==3){
-	## THIRD PLOT. Plot of the various Energy sub_metering variables vs. Time of the Week
-	dev.new()
-	with(data, plot(datesToTime, Sub_metering_1, xaxt='n',type="l",ylab ="Energy sub metering"))
-	with(data, points(datesToTime, Sub_metering_2,type="l",col="red" ) )
-	with(data, points(datesToTime, Sub_metering_3,type="l",col="blue") )
-	axis(1, c(0,.5,1), c("Thu","Fri","Sat"))
-	legend("topright",lty=c(1,1,1),col=c("black","red","blue"),legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"))
-	
-	}else if(n==4){
+	if(n==4){
 	## FOURTH PLOT. Four plots of various electricity consumption metrics vs. Time of the Week.
-	dev.new()
 	par(mfrow = c(2,2))
 
 	## Plot in (1,1)
-	with(data, plot(datesToTime,Global_active_power,xaxt='n',type="l",ylab ="Global Active Power (kilowatts)"))
+	with(data, plot(datesToTime,Global_active_power,xaxt='n',type="l",xlab="",ylab ="Global Active Power (kilowatts)"))
 	axis(1, c(0,.5,1), c("Thu","Fri","Sat"))
 
 	## Plot in (1,2)
-	with(data, plot(datesToTime,Voltage,xaxt='n',type="l",ylab ="Voltage",xlab="datetime"))
+	with(data, plot(datesToTime,Voltage,xaxt='n',type="l",xlab="datetime",ylab ="Voltage"))
+	axis(1, c(0,.5,1), c("Thu","Fri","Sat"))
 
 	## Plot in (2,1)
-	with(data, plot(datesToTime, Sub_metering_1, xaxt='n',type="l",ylab ="Energy sub metering"))
+	with(data, plot(datesToTime, Sub_metering_1, xaxt='n',xlab="",type="l",ylab ="Energy sub metering"))
 	with(data, points(datesToTime, Sub_metering_2,type="l",col="red" ) )
 	with(data, points(datesToTime, Sub_metering_3,type="l",col="blue") )
 	axis(1, c(0,.5,1), c("Thu","Fri","Sat"))
 	legend("topright",bty='n',lty=c(1,1,1),col=c("black","red","blue"),legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"))
 	
 	## Plot in (2,2)
-	with(data, plot(datesToTime,Global_active_power,xaxt='n',type="l",xlab="datetime"))
+	with(data, plot(datesToTime,Global_reactive_power,xaxt='n',type="l",xlab="datetime"))
 	axis(1, c(0,.5,1), c("Thu","Fri","Sat"))
 	}
 }
 
 
 
-
+## This function extracts the relevant lines of the dataset corresponding
+## to the two days of interest "1/2/2007" and "2/2/2007" (Format: day-moth-year) 
 
 readFile <- function(filename){
 	## Reads the file as a character vector to avoid increasing size
